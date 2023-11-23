@@ -3,56 +3,66 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PlayerResource;
+use App\Http\Resources\Titles\TitlesResourceCollection;
 use App\Http\Services\PlayerTitleService;
 use App\Models\Player;
-use App\Models\Title;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class PlayerController extends Controller
 {
+    private $titleService;
+    private $player;
+    // global $player could cause issues with request lifecycle
+    public function __construct(PlayerTitleService $titleService)
+    {
+        $this->titleService = $titleService;
+        $this->middleware(function ($request, $next) {
+            $this->player = Player::find(Auth::id());
+
+            return $next($request);
+        });
+        // $this->player = Player::find(Auth::id());
+    }
+
     public function grantTitle(Request $request)
     {
-        // Validate the request parameters
-        $request->validate([
+        $validatedData = $request->validate([
             'title' => 'required|string|min:2',
         ]);
 
-        // Find the player
-        $player = Player::find(Auth::id());
+        $this->titleService->grantTitle($this->player, $validatedData['title']);
 
-        $titleService = new PlayerTitleService();
+        $responseMessage = "Added {$validatedData['title']} title to {$this->player->username}";
 
-        try {
-            // Grant the title using the service
-            $titleService->grantTitle($player, $request->title);
-
-            // Success response
-            $responseMessage = 'Added ' . $request->title . ' title to ' . $player->username;
-            return response()->json(['success' => true, 'message' => $responseMessage]);
-        } catch (\InvalidArgumentException $e) {
-            // Handle invalid argument exception (title not found)
-            return response()->json(['error' => $e->getMessage()], 404);
-        }
+        return response()->json(['success' => true, 'message' => $responseMessage]);
     }
 
-
-
-    public function changeActiveTitle(int $titleId)
+    public function setActiveTitle(Request $request)
     {
-        $player = Player::find(Auth::id());
-        $player->setActiveTitle($titleId);
-        $player->save();
+        $response = $this->titleService->setActiveTitle($this->player, $request->title);
 
-        return response()->json(new PlayerResource($player));
+        return response()->json($response);
     }
 
-    public function show()
+    public function getProfile()
     {
         $player = Player::with(['titles', 'activeTitle'])->find(Auth::id());
 
         return response()->json(new PlayerResource($player));
+    }
+
+    public function getUnlockedTitles()
+    {
+        $unlockedTitles = new TitlesResourceCollection($this->player->unlockedTitles);
+
+        return response()->json(['unlockedTitles' => $unlockedTitles]);
+    }
+
+    public function getActiveTitle()
+    {
+        $response = $this->titleService->getActiveTitle($this->player);
+
+        return response()->json($response);
     }
 }

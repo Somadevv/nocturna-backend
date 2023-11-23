@@ -25,10 +25,7 @@ class Player extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function setActiveTitle($titleId)
-    {
-        $this->active_title_id = $titleId;
-    }
+
     public function titles(): BelongsToMany
     {
         return $this->belongsToMany(Title::class, 'player_titles');
@@ -43,5 +40,4 @@ class Player extends Authenticatable
     {
         return $this->belongsToMany(Title::class, 'player_titles');
     }
-    
 }

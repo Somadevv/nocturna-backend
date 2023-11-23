@@ -14,10 +14,23 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'player'], function () {
-    Route::get('/', [PlayerController::class, 'show']);
-    Route::post('grant-title/{playerId}', [PlayerController::class, 'grantTitle']);
-    Route::patch('title/{id}', [PlayerController::class, 'changeActiveTitle']);
+
+    // Get Player profile
+    Route::get('/profile', [PlayerController::class, 'getProfile']);
+
+    // Get unlocked titles
+    Route::get('/unlocked-titles', [PlayerController::class, 'getUnlockedTitles']);
+
+    // Grant title 
+    Route::post('/grant-title', [PlayerController::class, 'grantTitle']);
+
+    // Get active title
+    Route::get('/active-title', [PlayerController::class, 'getActiveTitle']);
+
+    // Change the active title 
+    Route::patch('/active-title', [PlayerController::class, 'setActiveTitle']);
 });
+
 
 
 Route::group(['prefix' => 'auth'], function () {
