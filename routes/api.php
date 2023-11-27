@@ -1,49 +1,35 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\PlayerController;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\PlayerController;
+// Authenticated Routes
+Route::middleware('jwt')->group(function () {
 
-Route::post("player/register", [PlayerController::class, "register"]);
+    Route::prefix('auth')->group(function () {
+        Route::post('login', [AuthController::class, 'login']);
+        Route::post('register', [AuthController::class, 'register']);
 
+        Route::post('logout', [AuthController::class, 'logout']);
+    });
+    // Player Routes
+    Route::prefix('player')->group(function () {
+        // Profile
+        Route::post('/profile', [PlayerController::class, 'getProfile']);
 
-// Player stats
-Route::group(['prefix' => 'auth'], function () {
-    Route::get('player-titles', [PlayerController::class, 'getTitles']);
-});
+        // Titles
+        Route::get('/unlocked-titles', [PlayerController::class, 'getUnlockedTitles']);
+        Route::post('/grant-title', [PlayerController::class, 'grantTitle']);
+        Route::get('/active-title', [PlayerController::class, 'getActiveTitle']);
+        Route::patch('/active-title', [PlayerController::class, 'setActiveTitle']);
 
-Route::group(['middleware' => 'auth:sanctum', 'prefix' => 'player'], function () {
-
-    // Get Player profile
-    Route::get('/profile', [PlayerController::class, 'getProfile']);
-
-    // Get unlocked titles
-    Route::get('/unlocked-titles', [PlayerController::class, 'getUnlockedTitles']);
-
-    // Grant title 
-    Route::post('/grant-title', [PlayerController::class, 'grantTitle']);
-
-    // Get active title
-    Route::get('/active-title', [PlayerController::class, 'getActiveTitle']);
-
-    // Change the active title 
-    Route::patch('/active-title', [PlayerController::class, 'setActiveTitle']);
-});
-
-
-
-Route::group(['prefix' => 'auth'], function () {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('register', [AuthController::class, 'register']);
-
-
-    Route::group(['middleware' => 'auth:sanctum'], function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
+        // Inventory
+        Route::prefix('inventory')->group(function () {
+            Route::post('/', [InventoryController::class, 'getInventory']);
+            Route::post('add-item/{itemId}/{amount}', [InventoryController::class, 'addItem']);
+            Route::post('remove-item/{itemId}/{amount}', [InventoryController::class, 'removeItem']);
+        });
     });
 });
-
-// use App\Http\Requests\PlayerRequest;
-// Route::middleware('auth:sanctum')->get('/player/register', function (PlayerRequest $request) {
-//     return $request->player();
-// });

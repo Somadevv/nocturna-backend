@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Player;
+use App\Models\Title;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,14 +16,12 @@ class DatabaseSeeder extends Seeder
     {
         Player::factory(1)->create();
 
+
         $this->call([
             TitleSeeder::class,
             PlayerTitleSeeder::class,
+            ItemSeeder::class,
+            InventorySeeder::class
         ]);
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

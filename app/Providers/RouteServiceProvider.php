@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Player;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +30,12 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        $player = Player::find(1);
+
+        // TODO
+        if ($player) {
+            //Auth::login($player);
+        }
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

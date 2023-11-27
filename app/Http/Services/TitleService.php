@@ -6,7 +6,7 @@ use App\Models\Player;
 use App\Models\Title;
 use Illuminate\Support\Facades\Auth;
 
-class PlayerTitleService
+class TitleService
 {
 
     public function setActiveTitle(Player $player, $title)

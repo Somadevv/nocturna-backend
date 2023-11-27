@@ -13,10 +13,9 @@ class PlayerTitleSeeder extends Seeder
      */
     public function run(): void
     {
-        // DB::table('player_titles')->insert([
-        //     'player_id' => 1,
-        //     'title_id' => 1,
-        //     // Add other fields as needed
-        // ]);
+        DB::table('player_titles')->insert([
+            'player_id' => 1,
+            'title_id' => 1,
+        ]);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Foundation\Auth\User;
+
 
 class Title extends Model
 {
@@ -23,7 +23,6 @@ class Title extends Model
         return [
             'id' => $this->id,
             'title' => $this->title,
-            // Add other fields as needed
         ];
     }
 }
