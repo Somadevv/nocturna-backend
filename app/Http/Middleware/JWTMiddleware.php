@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class JWTMiddleware
 {
@@ -29,7 +30,7 @@ class JWTMiddleware
       }
     }
 
-    if ($request->bearerToken()) {
+    if ($request->user()) {
       return $next($request);
     }
 

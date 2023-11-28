@@ -3,16 +3,20 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\TitleController;
 use Illuminate\Support\Facades\Route;
+
+// Authenticated Routes
+
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 // Authenticated Routes
 Route::middleware('jwt')->group(function () {
 
     Route::prefix('auth')->group(function () {
-        Route::post('login', [AuthController::class, 'login']);
-        Route::post('register', [AuthController::class, 'register']);
-
-        Route::post('logout', [AuthController::class, 'logout']);
+        Route::post('/logout', [AuthController::class, 'logout']);
     });
     // Player Routes
     Route::prefix('player')->group(function () {
@@ -20,10 +24,10 @@ Route::middleware('jwt')->group(function () {
         Route::post('/profile', [PlayerController::class, 'getProfile']);
 
         // Titles
-        Route::get('/unlocked-titles', [PlayerController::class, 'getUnlockedTitles']);
-        Route::post('/grant-title', [PlayerController::class, 'grantTitle']);
-        Route::get('/active-title', [PlayerController::class, 'getActiveTitle']);
-        Route::patch('/active-title', [PlayerController::class, 'setActiveTitle']);
+        Route::get('/unlocked-titles', [TitleController::class, 'getUnlockedTitles']);
+        Route::post('/grant-title', [TitleController::class, 'grantTitle']);
+        Route::get('/active-title', [TitleController::class, 'getActiveTitle']);
+        Route::patch('/active-title', [TitleController::class, 'setActiveTitle']);
 
         // Inventory
         Route::prefix('inventory')->group(function () {

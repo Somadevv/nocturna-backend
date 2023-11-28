@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PlayerLoginRequest;
-use App\Http\Requests\PlayerRequest;
-use App\Http\Resources\PlayerResource;
+use App\Http\Services\PlayerService;
+use App\Http\Services\TitleService;
 use App\Models\Player;
-use App\Models\Title;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    public function __construct(private TitleService $titleService)
+    {
+    }
     public function register(Request $request)
     {
         $request->validate([
@@ -25,10 +27,8 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
         if ($player->save()) {
-            // TODO
-            $token = Auth::getToken($player->id);
-            $player->update(['active_title_id' => 1]);
 
+            $token = Auth::getToken($player->id);
 
             return response()->json([
                 'message' => 'Successfully created user!',

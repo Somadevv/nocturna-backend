@@ -1,12 +1,17 @@
-function Product(prodID, price) {
-    this.prodID = prodID;
-    this.price = price;
+const car = 0;
 
-    this.changePrice = function (discount) {
-        this.price -= discount;
-    };
+function returnsSomething(year) {
+    return Math.ceil(year);
+}
+console.log(returnsSomething(1000));
+
+function setCarValue(year) {
+    let result = year / 10 + 5;
+    car = result;
 }
 
-let glue = new Product();
+console.log(car);
 
-glue.changePrice(2);
+setCarValue(5600000000);
+
+console.log(car);

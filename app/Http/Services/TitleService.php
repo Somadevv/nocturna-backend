@@ -4,63 +4,40 @@ namespace App\Http\Services;
 
 use App\Models\Player;
 use App\Models\Title;
-use Illuminate\Support\Facades\Auth;
 
 class TitleService
 {
+    public function setActiveTitle(Player $player, string $titleName)
+    {
+        $title = $player->titles()->whereName($titleName)->firstOrFail();
+        $player->active_title_id = $title->id;
+        $player->save();
 
-    public function setActiveTitle(Player $player, $title)
+        return response("Title granted", 200);
+    }
+
+
+
+    public function grantTitle(Player $player, $title)
     {
         // Check if the title exists
         $titleModel = Title::where('title', $title)->first();
 
         if (!$titleModel) {
-            throw new \InvalidArgumentException("Title does not exist");
-        }
-
-        $player = Player::find(Auth::id());
-
-        // Check if the player has unlocked the title
-        if (!$player->titles->contains($titleModel)) {
-            throw new \InvalidArgumentException("Player has not unlocked the title");
-        }
-
-        // Check if the current active title is the same as the incoming title
-        if ($player->activeTitle && $player->activeTitle->title === $title) {
-            throw new \InvalidArgumentException("Title is already the active title");
-        }
-
-        // Set the active title by ID
-        $player->active_title_id = $titleModel->id;
-        $player->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Active title assigned',
-        ]);
-    }
-
-
-    public function grantTitle(Player $player, $title)
-    {
-        $player = Player::find(Auth::id());
-
-        // Check if the title exists in the database
-        $titleModel = Title::where('title', $title)->first();
-
-        if (!$titleModel) {
-            // Title doesn't exist, throw an exception or handle accordingly
-            throw new \InvalidArgumentException("Title does not exist");
+            return response()->json(['error' => 'Title does not exist'], 404);
         }
 
         // Check if the player already has the title
         if ($player->titles->contains($titleModel)) {
-            throw new \InvalidArgumentException("The player already owns the title {$title}!!");
+            return response()->json(['error' => 'Player already has this title'], 400);
         }
 
-        $player->titles()->syncWithoutDetaching([$titleModel->id]);
-    }
+        // Attach the title to the player
+        $player->titles()->attach($titleModel);
 
+        // Return a success response or any other necessary information
+        return response()->json(['success' => true, 'message' => 'Title granted'], 200);
+    }
 
     public function getActiveTitle(Player $player)
     {
